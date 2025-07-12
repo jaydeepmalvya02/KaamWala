@@ -5,34 +5,86 @@ import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 
 const Register = () => {
-  const [role, setRole] = useState("user"); // 'user' or 'buddy'
+  const [role, setRole] = useState("user");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
-  
-  const { backendUrl, token, bToken, setToken, setBToken } =
-    useContext(AuthContext);
-  const navigate=useNavigate()
-  const handleSubmit = async (e) => {
+  const [category, setCategory] = useState("");
+  const [kycFile, setKycFile] = useState(null);
+  const [otp, setOtp] = useState("");
+  const [showOtpInput, setShowOtpInput] = useState(false);
+
+  const { backendUrl, setToken } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleSendOtp = async (e) => {
     e.preventDefault();
-    console.log(name, email, password);
+
+    if (!name || !email || !password || !phone) {
+      return toast.error("Please fill all required fields.");
+    }
 
     try {
-      const { data } = await axios.post(`${backendUrl}/api/auth/register`, {
-        name,
-        email,
-        password,
-      });
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("email", email);
+      formData.append("phone", phone);
+      formData.append("password", password);
+      formData.append("role", role);
+
+      if (role === "buddy") {
+        formData.append("category", category);
+        if (kycFile) {
+          formData.append("kyc", kycFile);
+        }
+      }
+
+      const { data } = await axios.post(
+        `${backendUrl}/api/auth/register`,
+        formData,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
       if (data.success) {
-        toast.success(data.message);
-        localStorage.setItem('token',data.token)
-        navigate('/')
+        toast.success("OTP sent to your mobile/email");
+        setShowOtpInput(true);
+      } else {
+        toast.error(data.message || "Something went wrong");
       }
     } catch (error) {
       console.error(error);
       toast.error(error.message);
     }
   };
+
+  const handleVerifyOtp = async () => {
+    if (!otp) {
+      return toast.error("Please enter OTP");
+    }
+    try {
+      const { data } = await axios.post(`${backendUrl}/api/auth/verify-otp`, {
+        email,
+        otp,
+        type: "register",
+      });
+
+      if (data.success) {
+        localStorage.setItem("token", data.token);
+        setToken(data.token);
+        toast.success("Registration successful!");
+        navigate("/");
+      } else {
+        toast.error(data.message || "Invalid OTP");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error.message);
+    }
+  };
+
   return (
     <section className="min-h-screen flex items-center justify-center bg-[#000430] px-4">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
@@ -40,7 +92,6 @@ const Register = () => {
           Register as {role === "user" ? "User" : "Buddy"}
         </h2>
 
-        {/* Role Switcher */}
         <div className="flex justify-center mb-6 space-x-4">
           <button
             onClick={() => setRole("user")}
@@ -64,38 +115,52 @@ const Register = () => {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSendOtp} className="space-y-5">
           <div>
             <label className="block mb-1 text-gray-700">Full Name</label>
             <input
               type="text"
               placeholder="John Doe"
-              className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="w-full border border-gray-300 px-4 py-2 rounded"
               required
-              onChange={(e) => setName(e.target.value)}
               value={name}
+              onChange={(e) => setName(e.target.value)}
             />
           </div>
+
           <div>
             <label className="block mb-1 text-gray-700">Email</label>
             <input
               type="email"
               placeholder="you@example.com"
-              className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="w-full border border-gray-300 px-4 py-2 rounded"
               required
-              onChange={(e) => setEmail(e.target.value)}
               value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
+
+          <div>
+            <label className="block mb-1 text-gray-700">Mobile Number</label>
+            <input
+              type="text"
+              placeholder="9876543210"
+              className="w-full border border-gray-300 px-4 py-2 rounded"
+              required
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+          </div>
+
           <div>
             <label className="block mb-1 text-gray-700">Password</label>
             <input
               type="password"
               placeholder="••••••••"
-              className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="w-full border border-gray-300 px-4 py-2 rounded"
               required
-              onChange={(e) => setPassword(e.target.value)}
               value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
 
@@ -108,15 +173,18 @@ const Register = () => {
                 <input
                   type="text"
                   placeholder="e.g. Delivery, Pickup, Household"
-                  className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  className="w-full border border-gray-300 px-4 py-2 rounded"
                   required
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
                 />
               </div>
               <div>
                 <label className="block mb-1 text-gray-700">Upload KYC</label>
                 <input
                   type="file"
-                  className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  className="w-full border border-gray-300 px-4 py-2 rounded"
+                  onChange={(e) => setKycFile(e.target.files[0])}
                 />
               </div>
             </>
@@ -126,8 +194,28 @@ const Register = () => {
             type="submit"
             className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
           >
-            Create Account
+            Send OTP
           </button>
+
+          {showOtpInput && (
+            <div>
+              <label className="block mb-1 text-gray-700">Enter OTP</label>
+              <input
+                type="text"
+                placeholder="Enter OTP"
+                className="w-full border border-gray-300 px-4 py-2 rounded mb-4"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={handleVerifyOtp}
+                className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
+              >
+                Verify & Register
+              </button>
+            </div>
+          )}
         </form>
 
         <p className="text-center text-sm text-gray-600 mt-6">

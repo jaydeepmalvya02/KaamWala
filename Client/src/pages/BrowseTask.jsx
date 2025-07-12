@@ -14,7 +14,6 @@ const BrowseTask = () => {
         headers: { token },
       });
       if (data.success) {
-        // Filter only pending tasks
         const pendingTasks = data.data.filter((t) => t.status === "pending");
         setTasks(pendingTasks);
       } else {
@@ -25,6 +24,26 @@ const BrowseTask = () => {
       toast.error("Error fetching tasks");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const acceptTask = async (taskId) => {
+    try {
+      const { data } = await axios.post(
+        `${backendUrl}/api/task/accept`,
+        { taskId }, // 👈 send taskId to backend
+        { headers: { token } }
+      );
+
+      if (data.success) {
+        toast.success("Task accepted successfully!");
+        fetchTasks(); // Refresh list to hide accepted one
+      } else {
+        toast.error(data.message || "Failed to accept task");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Error accepting task");
     }
   };
 
@@ -70,10 +89,10 @@ const BrowseTask = () => {
               </p>
 
               <button
-                onClick={() => toast.info("Apply logic not wired yet!")}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                onClick={() => acceptTask(task._id)}
+                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
               >
-                Apply
+                Accept Task
               </button>
             </div>
           ))}

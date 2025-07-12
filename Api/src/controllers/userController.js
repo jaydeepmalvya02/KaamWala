@@ -13,4 +13,5 @@ const updateUser = async (req, res) => {
   const response = await myServices.update(User, userId, req.body);
   res.json(response);
 };
+
 module.exports = { getUser, updateUser };

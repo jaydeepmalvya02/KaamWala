@@ -11,6 +11,7 @@ import BuddyDashboard from "./pages/BuddyDashboard";
 import Footer from "./components/Footer";
 import { ToastContainer } from "react-toastify";
 import BrowseTask from "./pages/BrowseTask";
+import MyTask from "./components/MyTask";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/post-task" element={<PostTask />} />
         <Route path="/dashboard" element={<BuddyDashboard />} />
         <Route path="/browse-tasks" element={<BrowseTask/>} />
+        <Route path="/my-tasks" element={<MyTask/>} />
       </Routes>
       <Footer />
     </div>

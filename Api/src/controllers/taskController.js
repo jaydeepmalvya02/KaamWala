@@ -28,5 +28,21 @@ exports.listTasks = async (req, res) => {
   const response = await myServices.listPagination(Task, null, page, limit);
   res.json(response);
 };
+// Get My Tasks
+exports.myTasks = async (req, res) => {
+  try {
+    const userId = req.userId; // or req.userId from auth middleware
+
+    const tasks = await Task.find({
+      $or: [{ userId: userId }, { buddyId: userId }],
+    }).sort({ createdAt: -1 });
+
+    res.json({ success: true, data: tasks });
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false, message: "Error retrieving tasks" });
+  }
+};
+
 
 
