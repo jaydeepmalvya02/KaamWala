@@ -14,4 +14,6 @@ const updateUser = async (req, res) => {
   res.json(response);
 };
 
+
+
 module.exports = { getUser, updateUser };

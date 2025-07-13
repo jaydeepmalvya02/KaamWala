@@ -6,6 +6,7 @@ const userRoutes=require("./src/routes/userRoutes.js")
 const taskRoutes=require("./src/routes/taskRoutes.js")
 const buddyRoutes=require("./src/routes/buddyRoutes.js")
 const paymentRoutes=require("./src/routes/paymentRoutes.js")
+const uploadRoutes=require("./src/uploader/cloudinary")
 const cors = require("cors");
 
 dotenv.config();
@@ -22,6 +23,7 @@ app.use("/api/user",userRoutes)
 app.use("/api/buddy",buddyRoutes)
 app.use("/api/task",taskRoutes)
 app.use("/api/task/payment",paymentRoutes)
+app.use("/api/upload",uploadRoutes)
 
 // Default route
 app.get("/", (req, res) => {

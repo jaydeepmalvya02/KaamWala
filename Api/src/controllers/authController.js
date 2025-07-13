@@ -175,10 +175,73 @@ const sendVerificationOtp = async (newUser, type) => {
     throw new Error("Error sending OTP");
   }
 };
+const forgotPasswordStart = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.json({ success: false, message: "No user with this email." });
+    }
+
+    // Check OTP cooldown logic
+    const cooldown = await otpService.checkOtpCooldown(email);
+    if (!cooldown.status) {
+      return res.json({ success: false, message: cooldown.message });
+    }
+
+    // Generate OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    await UserOtp.create({ email, otp });
+
+    // Send OTP
+    await emailService.sendEmailOTP(
+      email,
+      "OTP for Password Reset",
+      `Your OTP is: ${otp}`,
+      { name: user.name || "User", otp },
+      "reset-password-email.html"
+    );
+
+    // Optionally send SMS too:
+    if (user.phone) {
+      await smsService.sendOtpSms(user.phone, otp);
+    }
+
+    res.json({ success: true, message: "OTP sent. Please verify." });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+const verifyForgotPassword = async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+
+    const result = await otpService.verifyOtp(User, email, otp);
+
+    if (!result.success) {
+      return res.json({ success: false, message: result.message });
+    }
+
+    const hashed = await bcrypt.hash(newPassword, 10);
+
+    const updated = await User.findOneAndUpdate(
+      { email },
+      { password: hashed, is_verified: true },
+      { new: true }
+    );
+
+    res.json({ success: true, message: "Password reset successfully." });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 
 module.exports = {
   registerUser,
-
+  forgotPasswordStart,
   loginUser,
   verifyOtp,
+  verifyForgotPassword
 };

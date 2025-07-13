@@ -17,10 +17,10 @@ cloudinary.config({
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-router.post("/", upload.single("image"), async (req, res) => {
+router.post("/", upload.single("raw"), async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ message: "Please provide an image" });
+      return res.status(400).json({ message: "Please provide File" });
     }
 
     // Function to handle the stream upload image to cloudinary
@@ -40,7 +40,7 @@ router.post("/", upload.single("image"), async (req, res) => {
     // call the streamUpload function with the fileBuffer
     const result = await streamUpload(req.file.buffer);
     // response with the uploaded image URL
-    res.json({ url: result.secure_url });
+    res.json({ success:true,url: result.secure_url });
   } catch (error) {
     console.log(error);
     res.status(500).send("Server Error");

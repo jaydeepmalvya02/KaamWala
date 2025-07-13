@@ -12,11 +12,44 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [category, setCategory] = useState("");
   const [kycFile, setKycFile] = useState(null);
+  const [kycFileUrl, setKycFileUrl] = useState("");
+  const [kycPreview, setKycPreview] = useState(null);
   const [otp, setOtp] = useState("");
   const [showOtpInput, setShowOtpInput] = useState(false);
 
   const { backendUrl, setToken } = useContext(AuthContext);
   const navigate = useNavigate();
+
+  const handleKycSelect = (e) => {
+    const file = e.target.files[0];
+    setKycFile(file);
+    setKycPreview(URL.createObjectURL(file));
+  };
+  const handleKycUpload = async () => {
+    if (!kycFile) return toast.error("Please select a file first");
+
+    try {
+      const formData = new FormData();
+      formData.append("raw", kycFile);
+
+      const { data } = await axios.post(
+        `${backendUrl}/api/upload/`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+      if (data.success) {
+        setKycFileUrl(data.url);
+        toast.success("KYC uploaded successfully!");
+      } else {
+        toast.error(data.message || "Upload failed");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Error uploading KYC");
+    }
+  };
 
   const handleSendOtp = async (e) => {
     e.preventDefault();
@@ -25,27 +58,28 @@ const Register = () => {
       return toast.error("Please fill all required fields.");
     }
 
+    if (role === "buddy" && !kycFileUrl) {
+      return toast.error("Please upload your KYC first.");
+    }
+
     try {
-      const formData = new FormData();
-      formData.append("name", name);
-      formData.append("email", email);
-      formData.append("phone", phone);
-      formData.append("password", password);
-      formData.append("role", role);
+      const payload = {
+        name,
+        email,
+        phone,
+        password,
+        role,
+      };
 
       if (role === "buddy") {
-        formData.append("category", category);
-        if (kycFile) {
-          formData.append("kyc", kycFile);
-        }
+        payload.category = category;
+        payload.kyc = kycFileUrl; // Send only URL
       }
 
       const { data } = await axios.post(
         `${backendUrl}/api/auth/register`,
-        formData,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
+        payload,
+        { headers: { "Content-Type": "application/json" } }
       );
 
       if (data.success) {
@@ -61,9 +95,7 @@ const Register = () => {
   };
 
   const handleVerifyOtp = async () => {
-    if (!otp) {
-      return toast.error("Please enter OTP");
-    }
+    if (!otp) return toast.error("Please enter OTP");
     try {
       const { data } = await axios.post(`${backendUrl}/api/auth/verify-otp`, {
         email,
@@ -179,13 +211,28 @@ const Register = () => {
                   onChange={(e) => setCategory(e.target.value)}
                 />
               </div>
+
               <div>
                 <label className="block mb-1 text-gray-700">Upload KYC</label>
                 <input
                   type="file"
                   className="w-full border border-gray-300 px-4 py-2 rounded"
-                  onChange={(e) => setKycFile(e.target.files[0])}
+                  onChange={handleKycSelect}
                 />
+                {kycPreview && (
+                  <img
+                    src={kycPreview}
+                    alt="KYC Preview"
+                    className="w-full mt-2 rounded border"
+                  />
+                )}
+                <button
+                  type="button"
+                  onClick={handleKycUpload}
+                  className="w-full mt-2 bg-purple-600 text-white py-2 rounded hover:bg-purple-700 transition"
+                >
+                  Upload KYC
+                </button>
               </div>
             </>
           )}

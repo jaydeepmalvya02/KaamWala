@@ -113,6 +113,19 @@ const Login = () => {
             </div>
           )}
         </form>
+        <div className="flex flex-row mt-3 gap-1 items-center justify-between">
+          <label className="flex items-center gap-1">
+            <input type="checkbox" name="rememberMe" id="rememberMe" />
+            <span>Remember Me</span>
+          </label>
+
+          <Link
+            to="/forgot-password"
+            className="text-blue-600 hover:underline text-sm"
+          >
+            Forgot Password?
+          </Link>
+        </div>
 
         <p className="text-center text-sm text-gray-600 mt-6">
           Don’t have an account?{" "}
