@@ -1,6 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import BuddyCard from "../components/BuddyCard"; // path dhyan se adjust karo
+import HeroSection from "../components/HeroSection";
+import HowItWorks from "../components/HowItWorks";
+import TestimonialCarousel from "../components/Testimonial";
 
 const Home = () => {
   const buddies = [
@@ -36,7 +39,8 @@ const Home = () => {
   return (
     <main className="bg-white text-gray-800">
       {/* Hero Section */}
-      <section className="bg-[#000430] text-white py-20">
+      <HeroSection/>
+      {/* <section className="bg-[#000430] text-white py-20">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             Your Personal Errand Buddy
@@ -52,10 +56,11 @@ const Home = () => {
             Post a Task
           </Link>
         </div>
-      </section>
+      </section> */}
 
       {/* How It Works */}
-      <section className="py-16 bg-gray-50">
+      <HowItWorks/>
+      {/* <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-10">How It Works</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -80,8 +85,10 @@ const Home = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
+      {/* Testimonial */}
+      <TestimonialCarousel/>
       {/* Buddy Card Section */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 text-center">
