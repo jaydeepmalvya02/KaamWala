@@ -18,6 +18,7 @@ function App() {
   return (
     <div>
       <ToastContainer />
+
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -28,7 +29,7 @@ function App() {
         <Route path="/dashboard" element={<BuddyDashboard />} />
         <Route path="/browse-tasks" element={<BrowseTask />} />
         <Route path="/my-tasks" element={<MyTask />} />
-        <Route path="/forgot-password" element={<ForgotPassword/>} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
       </Routes>
       <Footer />
     </div>

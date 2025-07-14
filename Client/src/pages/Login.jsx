@@ -6,15 +6,30 @@ import { AuthContext } from "../context/AuthContext";
 
 const Login = () => {
   const [email, setEmail] = useState("");
+  const [maskedEmail, setMaskedEmail] = useState("");
   const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
   const [showOtpInput, setShowOtpInput] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const { backendUrl, setToken } = useContext(AuthContext);
 
+  const maskEmail = (email) => {
+    const [user, domain] = email.split("@");
+    if (user.length <= 2) return "*@" + domain;
+    return (
+      user[0] +
+      "*".repeat(user.length - 2) +
+      user[user.length - 1] +
+      "@" +
+      domain
+    );
+  };
+
   const handleSendOtp = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const { data } = await axios.post(`${backendUrl}/api/auth/login`, {
         email,
@@ -23,6 +38,7 @@ const Login = () => {
 
       if (data.success) {
         toast.success("OTP sent to your email");
+        setMaskedEmail(maskEmail(email));
         setShowOtpInput(true);
       } else {
         toast.error(data.message || "Invalid credentials");
@@ -31,15 +47,17 @@ const Login = () => {
       console.error(error);
       toast.error(error.message);
     }
+    setLoading(false);
   };
 
   const handleVerifyOtp = async () => {
     if (!otp) return toast.error("Please enter OTP");
+    setLoading(true);
     try {
       const { data } = await axios.post(`${backendUrl}/api/auth/verify-otp`, {
         email,
         otp,
-        type:"login"
+        type: "login",
       });
 
       if (data.success) {
@@ -54,6 +72,28 @@ const Login = () => {
       console.error(error);
       toast.error("OTP verification failed");
     }
+    setLoading(false);
+  };
+
+  const handleResendOtp = async () => {
+    if (!email || !password) return toast.error("Fill credentials first");
+    setLoading(true);
+    try {
+      const { data } = await axios.post(`${backendUrl}/api/auth/login`, {
+        email,
+        password,
+      });
+
+      if (data.success) {
+        toast.success("OTP resent to your email");
+      } else {
+        toast.error(data.message || "Failed to resend OTP");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error.message);
+    }
+    setLoading(false);
   };
 
   return (
@@ -72,6 +112,7 @@ const Login = () => {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              disabled={showOtpInput}
             />
           </div>
           <div>
@@ -83,18 +124,27 @@ const Login = () => {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              disabled={showOtpInput}
             />
           </div>
 
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
-          >
-            Send OTP
-          </button>
+          {!showOtpInput && (
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition ${
+                loading && "opacity-50 cursor-not-allowed"
+              }`}
+            >
+              {loading ? "Sending OTP..." : "Send OTP"}
+            </button>
+          )}
 
           {showOtpInput && (
             <div className="mt-4">
+              <p className="mb-2 text-sm text-gray-600">
+                OTP sent to: <strong>{maskedEmail}</strong>
+              </p>
               <label className="block mb-1 text-gray-700">Enter OTP</label>
               <input
                 type="text"
@@ -105,10 +155,21 @@ const Login = () => {
               />
               <button
                 type="button"
+                disabled={loading}
                 onClick={handleVerifyOtp}
-                className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
+                className={`w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition ${
+                  loading && "opacity-50 cursor-not-allowed"
+                }`}
               >
-                Verify & Login
+                {loading ? "Verifying..." : "Verify & Login"}
+              </button>
+              <button
+                type="button"
+                disabled={loading}
+                onClick={handleResendOtp}
+                className="w-full text-blue-600 text-sm mt-2 hover:underline"
+              >
+                Resend OTP
               </button>
             </div>
           )}

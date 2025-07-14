@@ -4,6 +4,7 @@ import BuddyCard from "../components/BuddyCard"; // path dhyan se adjust karo
 import HeroSection from "../components/HeroSection";
 import HowItWorks from "../components/HowItWorks";
 import TestimonialCarousel from "../components/Testimonial";
+import FindNearbyBuddy from "../components/FindNearbyBuddy";
 
 const Home = () => {
   const buddies = [
@@ -87,6 +88,7 @@ const Home = () => {
         </div>
       </section> */}
 
+      <FindNearbyBuddy/>
       {/* Testimonial */}
       <TestimonialCarousel/>
       {/* Buddy Card Section */}

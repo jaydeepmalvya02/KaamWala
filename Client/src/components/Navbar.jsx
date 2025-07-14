@@ -6,7 +6,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const toggleMenu = () => setIsOpen(!isOpen);
 
-  const { token, bToken, setToken, setBToken,profile } = useContext(AuthContext);
+  const { token, setToken,profile } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const linkClasses = "px-3 py-2 rounded-md text-sm font-medium";
@@ -44,10 +44,6 @@ const Navbar = () => {
       localStorage.removeItem("token");
       setToken(false);
     }
-    if (bToken) {
-      localStorage.removeItem("bToken");
-      setBToken(false);
-    }
     navigate("/login");
   };
 
@@ -75,7 +71,7 @@ const Navbar = () => {
                 </NavLink>
               ))}
 
-              {role ? (
+              {token ? (
                 <>
                   <NavLink
                     to="/profile"
@@ -83,12 +79,14 @@ const Navbar = () => {
                   >
                     Profile
                   </NavLink>
-                  <button
+                   <button
                     onClick={handleLogout}
                     className="ml-2 px-3 py-2 rounded-md text-sm font-medium bg-red-600 hover:bg-red-700"
                   >
                     Logout
                   </button>
+                  
+                 
                 </>
               ) : (
                 <NavLink
