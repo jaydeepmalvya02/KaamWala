@@ -160,12 +160,12 @@ const sendVerificationOtp = async (newUser, type) => {
     );
 
     // ✅ Send SMS — only if mobile is valid
-    if (phone && phone.length >= 10) {
-      await smsService.sendOtpSms(phone, otp);
-      console.log(`✅ OTP sent to mobile: ${phone}`);
-    } else {
-      console.log(`ℹ️ No valid mobile provided. SMS not sent.`);
-    }
+    // if (phone && phone.length >= 10) {
+    //   await smsService.sendOtpSms(phone, otp);
+    //   console.log(`✅ OTP sent to mobile: ${phone}`);
+    // } else {
+    //   console.log(`ℹ️ No valid mobile provided. SMS not sent.`);
+    // }
 
     console.log(`✅ OTP sent to email: ${email} (${type})`);
 
@@ -204,9 +204,9 @@ const forgotPasswordStart = async (req, res) => {
     );
 
     // Optionally send SMS too:
-    if (user.phone) {
-      await smsService.sendOtpSms(user.phone, otp);
-    }
+    // if (user.phone) {
+    //   await smsService.sendOtpSms(user.phone, otp);
+    // }
 
     res.json({ success: true, message: "OTP sent. Please verify." });
   } catch (error) {

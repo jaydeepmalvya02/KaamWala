@@ -2,7 +2,7 @@ const myServices = require("./myServices");
 const UserOtp = require("../models/userOtpModel"); // <-- Mongoose OTP model
 const User = require("../models/userModel"); // <-- Mongoose User model
 
-const OTP_EXPIRATION_TIME = process.env.OTP_EXPIRATION_TIME || 1 * 60 * 1000; // 30 min
+const OTP_EXPIRATION_TIME = process.env.OTP_EXPIRATION_TIME || 5 * 60 * 1000; // 30 min
 const MAX_ATTEMPTS = 4;
 const BLOCK_TIME = 24 * 60 * 60 * 1000; // 24 hours
 

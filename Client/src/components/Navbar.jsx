@@ -2,34 +2,53 @@ import React, { useContext, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
-const NAV_LINKS = [
-  { name: "Home", path: "/" },
-  { name: "Post Task", path: "/post-task" },
-  { name: "Buddy Dashboard", path: "/dashboard" },
-];
-
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const toggleMenu = () => setIsOpen(!isOpen);
 
-  const { token, bToken, setToken ,setBToken} = useContext(AuthContext);
+  const { token, bToken, setToken, setBToken,profile } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const linkClasses = "px-3 py-2 rounded-md text-sm font-medium";
   const activeClasses = "bg-blue-700";
   const baseClasses = "hover:bg-blue-700";
 
+  // ✅ Determine user role:
+  let role =profile.role ;
+  
+
+  // ✅ Generate nav links based on role:
+  let links = [];
+
+  if (!role) {
+    // Not logged in → common pages
+    links = [
+      { name: "Home", path: "/" },
+      { name: "Post Task", path: "/post-task" },
+    ];
+  } else if (role === "user") {
+    links = [
+      { name: "Home", path: "/" },
+      { name: "Post Task", path: "/post-task" },
+      { name: "Dashboard", path: "/my-tasks" },
+    ];
+  } else if (role === "buddy") {
+    links = [
+      { name: "Home", path: "/" },
+      { name: "Buddy Dashboard", path: "/dashboard" },
+    ];
+  }
+
   const handleLogout = () => {
-   ; // Call logout from context
-   if (token){
-    localStorage.removeItem('token')
-    setToken(false)
-   }
-   if (bToken){
-    localStorage.removeItem('bToken')
-    setBToken(false)
-   }
-    navigate("/login"); // Redirect to login
+    if (token) {
+      localStorage.removeItem("token");
+      setToken(false);
+    }
+    if (bToken) {
+      localStorage.removeItem("bToken");
+      setBToken(false);
+    }
+    navigate("/login");
   };
 
   return (
@@ -44,7 +63,7 @@ const Navbar = () => {
           {/* Desktop Menu */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-4">
-              {NAV_LINKS.map((link) => (
+              {links.map((link) => (
                 <NavLink
                   key={link.path}
                   to={link.path}
@@ -56,7 +75,7 @@ const Navbar = () => {
                 </NavLink>
               ))}
 
-              {token || bToken ? (
+              {role ? (
                 <>
                   <NavLink
                     to="/profile"
@@ -120,7 +139,7 @@ const Navbar = () => {
       {/* Mobile Menu */}
       {isOpen && (
         <div className="md:hidden px-2 pt-2 pb-3 space-y-1 sm:px-3">
-          {NAV_LINKS.map((link) => (
+          {links.map((link) => (
             <NavLink
               key={link.path}
               to={link.path}
@@ -135,7 +154,7 @@ const Navbar = () => {
             </NavLink>
           ))}
 
-          {token || bToken ? (
+          {role ? (
             <>
               <NavLink
                 to="/profile"
