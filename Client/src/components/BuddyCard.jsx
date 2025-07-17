@@ -5,22 +5,22 @@ const BuddyCard = ({ buddy }) => {
     <div className="max-w-sm mx-auto bg-white border border-gray-200 rounded-lg shadow hover:shadow-md transition p-5">
       <div className="flex items-center space-x-4 mb-4">
         <img
-          src={buddy.profilePic}
+          src={buddy.userId.profileUrl}
           alt={buddy.name}
           className="w-16 h-16 rounded-full object-cover"
         />
         <div>
-          <h3 className="text-lg font-semibold">{buddy.name}</h3>
-          <p className="text-sm text-gray-500">{buddy.role}</p>
+          <h3 className="text-lg font-semibold">{buddy.userId.name}</h3>
+          <p className="text-sm text-gray-500">{buddy.skills[1]}</p>
         </div>
       </div>
 
       <div className="text-sm text-gray-600 mb-4">
         <p>
-          📍 <span className="font-medium">{buddy.location}</span>
+          📍 <span className="font-medium">{buddy.serviceArea}</span>
         </p>
         <p>
-          ⭐ {buddy.rating} | {buddy.tasksCompleted} tasks completed
+          ⭐ {buddy.averageRating} | {buddy.totalReviews} tasks completed
         </p>
       </div>
 

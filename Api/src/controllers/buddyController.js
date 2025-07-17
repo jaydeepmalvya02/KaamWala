@@ -40,3 +40,12 @@ exports.getDashboard = async (req, res) => {
     res.json({ success: false, message: err.message });
   }
 };
+exports.getBuddy=async(req,res)=>{
+  try {
+    const buddies=await Buddy.find({isActive:true}).populate("userId", "name email phone profileUrl");
+    res.json({success:true,buddies})
+  } catch (error) {
+     console.error(error);
+     res.status(500).json({ success: false, message: "Server Error" });
+  }
+}
