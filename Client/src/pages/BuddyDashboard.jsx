@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import { Link } from "react-router-dom";
+import BrowseTask from "./BrowseTask";
 
 const BuddyDashboard = () => {
   const { token, backendUrl } = useContext(AuthContext);
@@ -87,6 +88,8 @@ const BuddyDashboard = () => {
             </div>
           )}
         </div>
+
+        <BrowseTask/>
 
         {/* CTA */}
         <div className="text-center">
