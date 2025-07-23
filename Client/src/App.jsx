@@ -1,18 +1,17 @@
-
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Profile from "./pages/Profile";
-import Navbar from "./components/Navbar";
-import PostTask from "./pages/PostTask";
-import BuddyDashboard from "./pages/BuddyDashboard";
-import Footer from "./components/Footer";
+import Home from "./pages/common/Home";
+import Login from "./pages/common/Login";
+import Register from "./pages/common/Register";
+import Profile from "./pages/common/Profile";
+import Navbar from "./components/common/Navbar";
+import PostTask from "./pages/user/PostTask";
+import BuddyDashboard from "./pages/buddy/BuddyDashboard";
+import Footer from "./components/common/Footer";
 import { ToastContainer } from "react-toastify";
-import BrowseTask from "./pages/BrowseTask";
-import MyTask from "./components/MyTask";
-import ForgotPassword from "./pages/ForgotPassword";
+import BrowseTask from "./pages/buddy/BrowseTask";
+import MyTask from "./components/user/MyTask";
+import ForgotPassword from "./pages/common/ForgotPassword";
 
 function App() {
   return (

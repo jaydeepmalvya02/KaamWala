@@ -1,19 +1,17 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
-import { AuthContext } from "../context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 import { Link } from "react-router-dom";
 import BrowseTask from "./BrowseTask";
 
 const BuddyDashboard = () => {
   const { token, backendUrl } = useContext(AuthContext);
-
   const [buddyData, setBuddyData] = useState({
     activeTasks: [],
     completedTasks: [],
     totalEarnings: 0,
     name: "",
   });
-
   useEffect(() => {
     const fetchBuddyData = async () => {
       try {
@@ -88,9 +86,7 @@ const BuddyDashboard = () => {
             </div>
           )}
         </div>
-
-        <BrowseTask/>
-
+        <BrowseTask />
         {/* CTA */}
         <div className="text-center">
           <Link

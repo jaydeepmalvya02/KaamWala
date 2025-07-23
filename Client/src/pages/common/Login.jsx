@@ -1,13 +1,15 @@
+import { Eye, EyeOff } from "lucide-react";
 import axios from "axios";
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { AuthContext } from "../context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [maskedEmail, setMaskedEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [otp, setOtp] = useState("");
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -115,17 +117,28 @@ const Login = () => {
               disabled={showOtpInput}
             />
           </div>
+
           <div>
             <label className="block mb-1 text-gray-700">Password</label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={showOtpInput}
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-600 pr-10"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={showOtpInput}
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-2.5 text-gray-500"
+                onClick={() => setShowPassword(!showPassword)}
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
           </div>
 
           {!showOtpInput && (
@@ -174,6 +187,7 @@ const Login = () => {
             </div>
           )}
         </form>
+
         <div className="flex flex-row mt-3 gap-1 items-center justify-between">
           <label className="flex items-center gap-1">
             <input type="checkbox" name="rememberMe" id="rememberMe" />
